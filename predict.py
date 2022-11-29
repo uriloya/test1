@@ -1,7 +1,6 @@
-# Arda Mavi
-
+# Arda Mavi & Uri Loya
+import asyncio
 import sys
-from keras.models import Sequential
 from keras.models import model_from_json
 
 import data_type_checker
@@ -10,6 +9,27 @@ from animal_types import AnimalType
 from file_types import FileType
 from get_dataset import get_img, get_corrected_img_array
 import numpy as np
+
+
+async def main():
+    file_path = sys.argv[1]
+
+    # check type of file in order to choose the right processor
+    file_type = data_type_checker.check_data_type(file_path)
+
+    if file_type == FileType.IMAGE:
+        img = get_img(file_path)
+        predict_image(img)
+    elif file_type == FileType.VIDEO:
+        video_frames_list = video_converter.extract_video_frames(file_path)
+        for count, frame in enumerate(video_frames_list):
+            if frame is None:
+                break
+            img = get_corrected_img_array(frame)
+            animal_type = predict_image(img)
+            await video_converter.write_frame_to_file(frame, animal_type, count)
+    else:
+        print("And error has occurred!")
 
 
 def predict_image(image) -> AnimalType:
@@ -37,26 +57,10 @@ def image_to_array(image):
 def predict(model, X) -> AnimalType:
     Y = model.predict(X)
     Y = np.argmax(Y, axis=1)
-    Y = AnimalType.CAT if Y[0] == 0 else AnimalType.DOG
+    Y = AnimalType.DOG if Y[0] == 0 else AnimalType.CAT
     return Y
 
 
 if __name__ == '__main__':
-    file_path = sys.argv[1]
-
-    # check type of file in order to choose the right processor
-    file_type = data_type_checker.check_data_type(file_path)
-
-    if file_type == FileType.IMAGE:
-        img = get_img(file_path)
-        predict_image(img)
-    elif file_type == FileType.VIDEO:
-        video_frames_list = video_converter.extract_video_frames(file_path)
-        for count, frame in enumerate(video_frames_list):
-            if frame is None:
-                break
-            img = get_corrected_img_array(frame)
-            animal_type = predict_image(img)
-            video_converter.write_frame_to_file(frame, animal_type, count)
-    else:
-        print("And error has occurred!")
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.wait([main()]))

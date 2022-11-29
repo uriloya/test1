@@ -1,5 +1,5 @@
 # Uri Loya
-
+from time import sleep
 from typing import List
 
 import cv2
@@ -29,7 +29,8 @@ def extract_video_frames(video_path) -> List:
     return video_frames_list
 
 
-def write_frame_to_file(frame, animal_type, count):
+async def write_frame_to_file(frame, animal_type, count):
+    sleep(1)
     if animal_type == AnimalType.CAT:
         imageio.imwrite(f"output/cats/{count}.jpg", frame)
     elif animal_type == AnimalType.DOG:
