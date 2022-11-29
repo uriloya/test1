@@ -30,5 +30,5 @@ def image_to_array(image):
 def predict(model, X) -> AnimalType:
     Y = model.predict(X)
     Y = np.argmax(Y, axis=1)
-    Y = AnimalType.DOG if Y[0] == 0 else AnimalType.CAT
+    Y = AnimalType.CAT if Y[0] == 0 else AnimalType.DOG
     return Y
