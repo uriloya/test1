@@ -1,5 +1,5 @@
 # Uri Loya
-from file_types import FileType
+from enums.file_type import FileType
 
 
 def check_data_type(file_path: str) -> FileType:

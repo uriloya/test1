@@ -5,7 +5,7 @@ from typing import List
 import cv2
 import imageio
 
-from animal_types import AnimalType
+from enums.animal_type import AnimalType
 
 
 def extract_video_frames(video_path) -> List:
@@ -20,7 +20,8 @@ def extract_video_frames(video_path) -> List:
             cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        except:
+        except Exception as e:
+            print(f"Failed to fetch frame (might be last one) {e}")
             break
 
     cap.release()
