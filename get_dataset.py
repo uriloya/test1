@@ -5,12 +5,18 @@ from os import listdir
 from skimage import io
 from scipy.misc import imresize
 
+
 def get_img(data_path):
     # Getting image array from path:
-    img_size = 64
     img = io.imread(data_path)
+    return get_corrected_img_array(img)
+
+
+def get_corrected_img_array(img):
+    img_size = 64
     img = imresize(img, (img_size, img_size, 3))
     return img
+
 
 def get_dataset(dataset_path='Data/Train_Data'):
     # Getting all data from data path:

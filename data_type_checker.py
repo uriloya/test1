@@ -3,9 +3,9 @@ from file_types import FileType
 
 
 def check_data_type(file_path: str) -> FileType:
-    if file_path.find('jpg'):
+    if 'jpg' in file_path:
         return FileType.IMAGE
-    elif file_path.find('mp4'):
+    elif 'mp4' in file_path:
         return FileType.VIDEO
     else:
         print(f"Unsupported file!: {file_path}")

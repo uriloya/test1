@@ -1,29 +1,26 @@
+# Uri Loya
+
+from typing import List
+
 import cv2
-import numpy as np
-from scipy.misc import imresize
-
-import predict
 
 
-def test_video():
-    cap = cv2.VideoCapture('Data/Videos/cats_and_dogs.mp4')
+def extract_video_frames(video_path) -> List:
+    # note that this method is limited to system RAM, it might be better to do it one by one
+    video_frames_list = []
+    cap = cv2.VideoCapture(video_path)
 
-    while(cap.isOpened()):
-        # print("in loop")
-        ret, frame = cap.read()
-        img_size = 64
-        frame2 = imresize(frame, (img_size, img_size, 3))
-        X = np.zeros((1, 64, 64, 3), dtype='float64')
-        X[0] = frame2
-        predict.predict_image(X)
+    while cap.isOpened():
+        unused, frame = cap.read()
+        video_frames_list.append(frame)
         try:
             cv2.imshow('frame', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        except Exception as e:
-            print(f"error: {e}")
+        except:
             break
 
-    print("done loop")
     cap.release()
     cv2.destroyAllWindows()
+
+    return video_frames_list

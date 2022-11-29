@@ -7,18 +7,13 @@ from keras.models import model_from_json
 import data_type_checker
 import video_converter
 from file_types import FileType
-from get_dataset import get_img
+from get_dataset import get_img, get_corrected_img_array
 import numpy as np
 
 
-def image_to_array(image_path: str):
-    img = get_img(image_path)
-    X = np.zeros((1, 64, 64, 3), dtype='float64')
-    X[0] = img
-    return X
+def predict_image(image):
+    X = image_to_array(image)
 
-
-def predict_image(X):
     # Getting model:
     model_file = open('Data/Model/model.json', 'r')
     model = model_file.read()
@@ -31,6 +26,12 @@ def predict_image(X):
     print('It is a ' + Y + ' !')
 
 
+def image_to_array(image):
+    X = np.zeros((1, 64, 64, 3), dtype='float64')
+    X[0] = image
+    return X
+
+
 def predict(model, X):
     Y = model.predict(X)
     Y = np.argmax(Y, axis=1)
@@ -39,19 +40,18 @@ def predict(model, X):
 
 
 if __name__ == '__main__':
-    video_converter.test_video()
-
     file_path = sys.argv[1]
+
+    # check type of file in order to choose the right processor
     file_type = data_type_checker.check_data_type(file_path)
 
     if file_type == FileType.IMAGE:
-        X = image_to_array(file_path)
-        predict_image(X)
+        img = get_img(file_path)
+        predict_image(img)
     elif file_type == FileType.VIDEO:
-
-        video_frames = []
-        for frame in video_frames:
-            X = image_to_array(file_path)
-            predict_image(X)
+        video_frames_list = video_converter.extract_video_frames(file_path)
+        for frame in video_frames_list:
+            img = get_corrected_img_array(frame)
+            predict_image(img)
     else:
-        print("And error has occured!")
+        print("And error has occurred!")
