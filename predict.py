@@ -6,12 +6,13 @@ from keras.models import model_from_json
 
 import data_type_checker
 import video_converter
+from animal_types import AnimalType
 from file_types import FileType
 from get_dataset import get_img, get_corrected_img_array
 import numpy as np
 
 
-def predict_image(image):
+def predict_image(image) -> AnimalType:
     X = image_to_array(image)
 
     # Getting model:
@@ -23,7 +24,8 @@ def predict_image(image):
     # Getting weights
     model.load_weights("Data/Model/weights.h5")
     Y = predict(model, X)
-    print('It is a ' + Y + ' !')
+    print('It is a ' + Y.value + ' !')
+    return Y
 
 
 def image_to_array(image):
@@ -32,10 +34,10 @@ def image_to_array(image):
     return X
 
 
-def predict(model, X):
+def predict(model, X) -> AnimalType:
     Y = model.predict(X)
     Y = np.argmax(Y, axis=1)
-    Y = 'cat' if Y[0] == 0 else 'dog'
+    Y = AnimalType.CAT if Y[0] == 0 else AnimalType.DOG
     return Y
 
 
@@ -50,8 +52,11 @@ if __name__ == '__main__':
         predict_image(img)
     elif file_type == FileType.VIDEO:
         video_frames_list = video_converter.extract_video_frames(file_path)
-        for frame in video_frames_list:
+        for count, frame in enumerate(video_frames_list):
+            if frame is None:
+                break
             img = get_corrected_img_array(frame)
-            predict_image(img)
+            animal_type = predict_image(img)
+            video_converter.write_frame_to_file(frame, animal_type, count)
     else:
         print("And error has occurred!")

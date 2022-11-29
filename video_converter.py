@@ -3,6 +3,9 @@
 from typing import List
 
 import cv2
+import imageio
+
+from animal_types import AnimalType
 
 
 def extract_video_frames(video_path) -> List:
@@ -24,3 +27,12 @@ def extract_video_frames(video_path) -> List:
     cv2.destroyAllWindows()
 
     return video_frames_list
+
+
+def write_frame_to_file(frame, animal_type, count):
+    if animal_type == AnimalType.CAT:
+        imageio.imwrite(f"output/cats/{count}.jpg", frame)
+    elif animal_type == AnimalType.DOG:
+        imageio.imwrite(f"output/dogs/{count}.jpg", frame)
+    else:
+        print("Unsupported type!")
