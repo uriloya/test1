@@ -1,5 +1,5 @@
 # Uri Loya
-from time import sleep
+import asyncio
 from typing import List
 
 import cv2
@@ -30,7 +30,7 @@ def extract_video_frames(video_path) -> List:
 
 
 async def write_frame_to_file(frame, animal_type, count):
-    sleep(1)
+    await asyncio.sleep(10)
     if animal_type == AnimalType.CAT:
         imageio.imwrite(f"output/cats/{count}.jpg", frame)
     elif animal_type == AnimalType.DOG:
